@@ -1,45 +1,65 @@
-# Discord Music Bot
+# 🎵 Discord Music Bot
 
-Bot Discord đơn giản với lệnh hát nhạc, vòng chờ và quản lý voice.
+Bot Discord modular với kiến trúc Domain-Driven Design, hỗ trợ phát nhạc từ YouTube, quản lý hàng chờ, và tải/gỡ module động qua lệnh Discord.
 
-## ⚡ Tính năng
+## Tính năng
 
-- ✅ Phát nhạc từ YouTube
-- ✅ Quản lý hàng chờ
-- ✅ Điều chỉnh âm lượng
-- ✅ Các chế độ lặp (none, song, queue)
-- ✅ Auto-disconnect khi bot ở một mình
-- ✅ Xáo trộn hàng chờ
-- ✅ Logging chi tiết
-- ✅ Cấu trúc modular (cogs)
+- Phát nhạc từ YouTube (tìm kiếm hoặc link trực tiếp)
+- Quản lý hàng chờ (queue, shuffle, remove, clear)
+- Điều chỉnh âm lượng, chế độ lặp (none/song/queue)
+- Auto-disconnect khi không còn ai trong voice
+- Hệ thống module động: bật/tắt/reload tính năng qua Discord mà không cần restart
+- Logging chuyên nghiệp với UnicodeSafeHandler (hỗ trợ Emoji trên mọi nền tảng)
+- Kiến trúc modular, dễ mở rộng thêm tính năng mới
 
-## 📋 Yêu cầu
+## Yêu cầu
 
-- Python 3.8+
-- FFmpeg
-- Discord Bot Token
+- Python 3.10+
+- FFmpeg (cài sẵn trong PATH hoặc đặt cùng thư mục)
+- Discord Bot Token ([Tạo tại đây](https://discord.com/developers/applications))
 
-## 🚀 Cài đặt
+## Cài đặt
 
-### 1. Setup venv và dependencies
+### 1. Clone repository
 
 ```bash
-cd /home/bacxiu0duong/projects/discord
+git clone https://github.com/<username>/discord-bot.git
+cd discord-bot
+```
+
+### 2. Tạo môi trường ảo và cài dependencies
+
+**Linux / macOS:**
+```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Tạo file `.env`
+**Windows (PowerShell):**
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate
+pip install -r requirements.txt
+```
 
-Tạo file `discord/.env`:
+### 3. Cấu hình
+
+Sao chép file mẫu và điền token của bạn:
+
+```bash
+cp .env.example .env
+```
+
+Mở file `.env` và thay thế giá trị:
 
 ```
 DISCORD_TOKEN=your_discord_token_here
 BOT_PREFIX=!
+LOG_LEVEL=INFO
 ```
 
-### 3. Cài đặt FFmpeg (nếu chưa có)
+### 4. Cài đặt FFmpeg
 
 **Ubuntu/Debian:**
 ```bash
@@ -52,144 +72,152 @@ brew install ffmpeg
 ```
 
 **Windows:**
-- Download từ https://ffmpeg.org/download.html
+- Tải từ [ffmpeg.org](https://ffmpeg.org/download.html) và đặt `ffmpeg.exe` vào thư mục dự án
 - Hoặc: `choco install ffmpeg` (nếu dùng Chocolatey)
 
-## 🎮 Chạy bot
+## Chạy Bot
 
+### Chế độ Admin (chỉ lệnh quản trị)
 ```bash
-cd /home/bacxiu0duong/projects/discord
-source venv/bin/activate
-python3 main.py
+python main.py
 ```
 
-Hoặc chạy ở background:
+### Chạy kèm module nhạc ngay từ đầu
 ```bash
-nohup python3 main.py > bot.log 2>&1 &
+python main.py --modules music
 ```
 
-Xem logs:
+### Chạy nền trên Linux
 ```bash
-tail -f bot.log
+nohup python3 main.py --modules music > /dev/null 2>&1 &
 ```
 
-## 📖 Lệnh
+## Lệnh
 
-### Người dùng Voice
-
-| Lệnh | Alias | Mô tả |
-|------|-------|-------|
-| `!join` | `!j` | Bot vào voice channel của bạn |
-| `!quit` | `!leave`, `!dc` | Bot rời voice channel |
-
-### Người dùng Phát nhạc
+### 🎵 Âm nhạc
 
 | Lệnh | Alias | Mô tả |
-|------|-------|-------|
-| `!play <tên/link>` | `!p` | Tìm kiếm và phát nhạc từ YouTube |
-| `!pause` | - | Tạm dừng nhạc |
-| `!resume` | `!r` | Tiếp tục phát nhạc |
-| `!skip` | `!next`, `!s` | Chuyển đến bài tiếp theo |
-| `!stop` | - | Dừng nhạc và xóa hàng chờ |
+|-------|-------|-------|
+| `!play <tên/link>` | `!p` | Phát nhạc từ YouTube |
+| `!pause` | — | Tạm dừng |
+| `!resume` | `!r` | Tiếp tục phát |
+| `!skip` | `!next`, `!s` | Chuyển bài |
+| `!stop` | — | Dừng và xóa hàng chờ |
 
-### Quản lý Hàng chờ
-
-| Lệnh | Alias | Mô tả |
-|------|-------|-------|
-| `!queue` | `!q` | Xem hàng chờ (10 bài đầu) |
-| `!nowplaying` | `!np` | Hiển thị bài đang phát |
-| `!remove <số>` | `!rm` | Xóa bài khỏi hàng chờ |
-| `!clear` | - | Xóa toàn bộ hàng chờ |
-| `!shuffle` | - | Xáo trộn hàng chờ |
-
-### Cài đặt
+### 📜 Hàng chờ
 
 | Lệnh | Alias | Mô tả |
-|------|-------|-------|
-| `!volume <1-100>` | `!vol` | Đặt âm lượng |
-| `!loop [none\|song\|queue]` | - | Chế độ lặp nhạc |
-| `!help` | `!h` | Hiển thị trợ giúp |
+|-------|-------|-------|
+| `!queue` | `!q` | Xem hàng chờ |
+| `!nowplaying` | `!np` | Bài đang phát |
+| `!remove <số>` | `!rm` | Xóa bài theo số thứ tự |
+| `!clear` | — | Xóa toàn bộ hàng chờ |
+| `!shuffle` | — | Xáo trộn hàng chờ |
 
-## 📁 Cấu trúc dự án
+### ⚙️ Cài đặt
+
+| Lệnh | Alias | Mô tả |
+|-------|-------|-------|
+| `!volume <1-100>` | `!vol` | Điều chỉnh âm lượng |
+| `!loop [none\|song\|queue]` | — | Chế độ lặp |
+| `!join` | `!j` | Vào voice channel |
+| `!quit` | `!leave`, `!dc` | Rời voice channel |
+| `!help` | `!h` | Xem trợ giúp |
+
+### 🔒 Quản trị (Chỉ Owner)
+
+| Lệnh | Mô tả |
+|-------|-------|
+| `!modules` | Xem trạng thái tất cả module |
+| `!load <tên>` | Bật một module |
+| `!unload <tên>` | Tắt một module |
+| `!reload <tên>` | Reload module (áp dụng code mới ngay) |
+| `!adminhelp` | Hướng dẫn đầy đủ cho Admin |
+
+## Cấu trúc dự án
 
 ```
 discord/
-├── main.py                 # Entry point
-├── config.py              # Constants & config
-├── logger.py              # Logging setup
-├── requirements.txt       # Tất cả dependencies
-├── .env                   # Token & prefix (không lưu vào Git)
-├── .gitignore            # Ignore patterns
-├── README.md             # Documentation
-├── logs/                 # Log files
-│   └── bot.log
-├── cogs/                 # Command modules (cogs)
-│   └── music.py         # Music commands
-├── utils/               # Utility modules
-│   └── ytdl.py          # YouTube DL & audio source
-└── venv/                # Virtual environment (không lưu vào Git)
+├── main.py                          # Entry point, xử lý CLI args
+├── requirements.txt                 # Dependencies
+├── .env                             # Secrets (không đưa lên Git)
+├── .env.example                     # File mẫu cấu hình
+├── .gitignore                       # Danh sách file bị Git bỏ qua
+├── README.md                        # Tài liệu dự án
+│
+├── core/                            # Lõi hệ thống (dùng chung)
+│   ├── __init__.py
+│   ├── config.py                    # Cấu hình chung (token, prefix, colors)
+│   └── logger.py                    # UnicodeSafeHandler — log an toàn mọi nền tảng
+│
+├── modules/                         # Các module tính năng (tải động)
+│   ├── core_admin/                  # Module quản trị (luôn bật)
+│   │   ├── __init__.py
+│   │   └── cog.py                   # Lệnh: load, unload, reload, modules
+│   │
+│   └── music/                       # Module nghe nhạc
+│       ├── __init__.py
+│       ├── cog.py                   # Lệnh: play, pause, skip, queue...
+│       ├── config.py                # Cấu hình riêng cho module nhạc
+│       └── ytdl.py                  # Xử lý trích xuất audio từ YouTube
+│
+├── logs/                            # Log files (không đưa lên Git)
+└── venv/                            # Môi trường ảo (không đưa lên Git)
 ```
 
-## 🛠️ Cấu hình
+## Kiến trúc
 
-### file `config.py`
+### Tải Module Động
 
-Chỉnh sửa các hằng số ở đây:
-
-- `DISCORD_TOKEN` - Token từ `.env`
-- `BOT_PREFIX` - Tiền tố lệnh (mặc định: `!`)
-- `YTDL_FORMAT_OPTIONS` - Cấu hình yt-dlp
-- `FFMPEG_OPTIONS` - Cấu hình FFmpeg
-- `DEFAULT_VOLUME` - Âm lượng mặc định (0.0-1.0)
-- `IDLE_TIMEOUT` - Thời gian disconnect nếu bot ở một mình (giây)
-- `LOG_LEVEL` - Mức logging (DEBUG, INFO, WARNING, ERROR)
-
-### file `.env`
+Bot sử dụng hệ thống Extension của `discord.py` để cho phép bật/tắt tính năng trong lúc bot đang chạy:
 
 ```
-DISCORD_TOKEN=your_token_here
-BOT_PREFIX=!
+main.py (Entry Point)
+  ├── core/config.py      ← Cấu hình chung
+  ├── core/logger.py      ← Logging tập trung
+  │
+  ├── modules/core_admin/ ← Luôn bật, không thể tắt
+  └── modules/music/      ← Tải động qua !load / --modules
 ```
 
-## 📊 Logging
+- **Khởi động:** `python main.py --modules music` hoặc chỉ `python main.py`
+- **Runtime:** Dùng `!load music`, `!unload music`, `!reload music` trên Discord
 
-Bot sử dụng `logging` module để ghi lại toàn bộ hoạt động:
+### UnicodeSafeHandler
 
-- **Log file:** `logs/bot.log`
-- **Console:** Hiển thị trực tiếp trên terminal
+Giải quyết triệt để lỗi `UnicodeEncodeError` trên Windows Terminal (cp1252):
 
-Log bao gồm:
-- Bot startup/shutdown
-- Lệnh được thực thi
-- Lỗi và exceptions
-- Hoạt động voice
+- Thử ghi log bình thường trước
+- Nếu lỗi encoding, ghi trực tiếp bytes UTF-8 xuống `sys.stderr.buffer`
+- Không bao giờ crash bot vì lỗi hiển thị log
 
-## 🐛 Xử lý lỗi
+## Mở rộng
 
-Bot xử lý các lỗi sau:
+Để thêm module mới (ví dụ: `minigame`):
 
-1. **Bot không vào được voice** → Hiển thị lỗi và log
-2. **Không tìm thấy bài hát** → Thông báo & retry
-3. **Command lỗi** → Global error handler
-4. **Timeout voice** → Auto-disconnect
+1. Tạo thư mục `modules/minigame/`
+2. Tạo các file:
+   - `__init__.py` — export hàm `setup(bot)`
+   - `cog.py` — class kế thừa `commands.Cog`
+   - `config.py` — cấu hình riêng (nếu cần)
+3. Đăng ký trong `modules/core_admin/cog.py` → `AVAILABLE_MODULES`
+4. Bật bằng `!load minigame` hoặc `python main.py --modules minigame`
 
-## 🔒 Best Practices
+## Bảo mật
 
-- ✅ **Type hints** - Tất cả functions có type hints
-- ✅ **Docstrings** - Mô tả chi tiết cho mỗi class/function
-- ✅ **Config centralized** - Tất cả constants trong `config.py`
-- ✅ **Logging** - Dùng logging module thay print()
-- ✅ **Input validation** - Kiểm tra query, volume input
-- ✅ **Error handling** - Try-except phổ biến
-- ✅ **Modular code** - Cogs & utils tách biệt
-- ✅ **Organized imports** - PEP 8 compliant
+- Token được quản lý qua biến môi trường (`.env`), không bao giờ hardcode
+- Lệnh quản trị (`load`, `unload`, `reload`) được bảo vệ bởi `@commands.is_owner()`
+- File `.env` được liệt kê trong `.gitignore` để tránh lộ khi push lên GitHub
+- File `.env.example` chỉ chứa giá trị mẫu, không chứa thông tin thật
 
-## 📝 Lưu ý
+## Dependencies
 
-- **Không commit `.env`** - Thêm vào `.gitignore`
-- **Không commit `venv/`** - Virtual environment
-- **Không commit `logs/`** - Optional
-- **Không commit `__pycache__/`** - Cache Python
+| Package | Mục đích |
+|---------|----------|
+| `discord.py[voice]` | Framework Discord Bot + hỗ trợ voice |
+| `yt-dlp` | Trích xuất audio từ YouTube |
+| `python-dotenv` | Đọc biến môi trường từ file `.env` |
+| `PyNaCl` | Mã hóa voice (yêu cầu bởi discord.py) |
 
 ---
 

@@ -1,4 +1,43 @@
-venv/
+# ── Python ─────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ── Virtual Environment ───────────────────────────────────────────
+venv/
+.venv/
+env/
+
+# ── Secrets & Environment ─────────────────────────────────────────
 .env
+.env.local
+.env.*.local
+
+# ── IDE / Editor ──────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+
+# ── OS Generated ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs ──────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── Binary / Runtime ─────────────────────────────────────────────
+ffmpeg.exe
+ffmpeg
+ffprobe.exe
+ffprobe
